@@ -1,6 +1,5 @@
 package com.management.order.controller;
 
-import com.management.order.domain.User;
 import com.management.order.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

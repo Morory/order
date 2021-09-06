@@ -1,23 +1,25 @@
 package com.management.order.domain;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 @Entity
-@Getter @Setter
+@Table( name = "users", uniqueConstraints = {
+        @UniqueConstraint(columnNames = "username"),
+        @UniqueConstraint(columnNames = "email")
+})
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(length = 8)
-    private int id;
+    private Long id;
 
-    @Column(length = 20, nullable = false, unique = true)
+    @NotBlank
+    @Size(max = 20)
     private String username;
 
-    @Column(nullable = false)
-    private String password;
+    @NotBlank
+    @Size(max )
 
 }
