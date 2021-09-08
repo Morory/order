@@ -30,7 +30,5 @@ spring:
         show_sql: true
         format_sql: true
 
-orderManagement:
-  app:
-    jwtSecret: orderManagementSecretKey
-    jwtExpirationMs: 19960204
+jwt:
+  secret: morory6082secretaksldjklasjdlaksjdlajsdlaksdasd
