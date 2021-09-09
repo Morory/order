@@ -1,83 +1,144 @@
 <template>
-  <div id="app">
-    <nav class="navbar navbar-expand navbar-dark bg-dark">
-      <a href class="navbar-brand" @click.prevent>bezKoder</a>
-      <div class="navbar-nav mr-auto">
-        <li class="nav-item">
-          <router-link to="/home" class="nav-link">
-            <font-awesome-icon icon="home" />Home
-          </router-link>
-        </li>
-        <li v-if="showAdminBoard" class="nav-item">
-          <router-link to="/admin" class="nav-link">Admin Board</router-link>
-        </li>
-        <li v-if="showModeratorBoard" class="nav-item">
-          <router-link to="/mod" class="nav-link">Moderator Board</router-link>
-        </li>
-        <li class="nav-item">
-          <router-link v-if="currentUser" to="/user" class="nav-link">User</router-link>
-        </li>
+  <v-app>
+    <v-navigation-drawer app permanent dark>
+      <v-list-item>
+        <v-list-item-content>
+          <v-list-item-title class="text-xl-h5">
+            <div class="py-lg-3">
+              受注管理システム
+            </div>
+          </v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+
+      <v-divider class="mx-2"/>
+
+      <div v-if="currentUser = this.$store.state.auth.user">
+        <v-menu absolute offset-y open-on-click>
+          <template v-slot:activator="{ on }">
+        <v-list-item two-line v-on="on">
+          <v-list-item-avatar>
+            <img src="./img/profile-image.jpg">
+          </v-list-item-avatar>
+
+          <v-list-item-content>
+            <v-list-item-title>{{currentUser.username}}</v-list-item-title>
+            <v-list-item-subtitle>ログイン中</v-list-item-subtitle>
+          </v-list-item-content>
+        </v-list-item>
+        <v-divider class="mx-2"/>
+          </template>
+          <v-list>
+            <v-list-item @click.prevent="profile">
+              <v-list-item-icon>
+                <v-icon>mdi-account</v-icon>
+              </v-list-item-icon>
+              <v-list-item-title>プロフィール</v-list-item-title>
+            </v-list-item>
+            <v-list-item @click.prevent="logout">
+              <v-list-item-icon>
+                <v-icon>mdi-logout-variant</v-icon>
+              </v-list-item-icon>
+              <v-list-item-title>ログアウト</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
       </div>
 
-      <div v-if="!currentUser" class="navbar-nav ml-auto">
-        <li class="nav-item">
-          <router-link to="/register" class="nav-link">
-            <font-awesome-icon icon="user-plus" />Sign Up
-          </router-link>
-        </li>
-        <li class="nav-item">
-          <router-link to="/login" class="nav-link">
-            <font-awesome-icon icon="sign-in-alt" />Login
-          </router-link>
-        </li>
-      </div>
+      <v-list dense nav>
+        <v-list-item
+            v-for="item in items"
+            :key="item.title"
+            link
+            :to="item.to"
+        >
+          <v-list-item-icon>
+            <v-icon>{{ item.icon }}</v-icon>
+          </v-list-item-icon>
 
-      <div v-if="currentUser" class="navbar-nav ml-auto">
-        <li class="nav-item">
-          <router-link to="/profile" class="nav-link">
-            <font-awesome-icon icon="user" />
-            {{ currentUser.username }}
-          </router-link>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href @click.prevent="logOut">
-            <font-awesome-icon icon="sign-out-alt" />LogOut
-          </a>
-        </li>
-      </div>
-    </nav>
+          <v-list-item-content>
+            <v-list-item-title class="text-xl-subtitle-1">{{ item.title }}</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
 
-    <div class="container">
-      <router-view />
-    </div>
-  </div>
+        <v-divider/>
+
+        <v-list-item
+            v-for="item in items2"
+            :key="item.title"
+            link
+            :to="item.to"
+        >
+          <v-list-item-icon>
+            <v-icon>{{ item.icon }}</v-icon>
+          </v-list-item-icon>
+
+          <v-list-item-content>
+            <v-list-item-title class="text-xl-subtitle-1">{{ item.title }}</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
+      <v-divider/>
+
+      <v-list-item
+          v-for="item in items3"
+          :key="item.title"
+          link
+          :to="item.to"
+      >
+        <v-list-item-icon>
+          <v-icon>{{ item.icon }}</v-icon>
+        </v-list-item-icon>
+
+        <v-list-item-content>
+          <v-list-item-title class="text-xl-subtitle-1">{{ item.title }}</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+      </v-list>
+
+    </v-navigation-drawer>
+
+    <v-main>
+      <router-view/>
+    </v-main>
+  </v-app>
 </template>
 
 <script>
 export default {
-  computed: {
-    currentUser() {
-      return this.$store.state.auth.user;
-    },
-    showAdminBoard() {
-      if (this.currentUser && this.currentUser.roles) {
-        return this.currentUser.roles.includes('ROLE_ADMIN');
-      }
+  name: 'App',
 
-      return false;
-    },
-    showModeratorBoard() {
-      if (this.currentUser && this.currentUser.roles) {
-        return this.currentUser.roles.includes('ROLE_MODERATOR');
-      }
-
-      return false;
-    }
+  components: {
   },
+
+  data: () => ({
+    items: [
+      { title: 'ホーム', icon: 'mdi-home', to: '/'},
+      { title: '見積書', icon: 'mdi-clipboard-list', to: '#1'},
+      { title: '納品書', icon: 'mdi-truck-delivery', to: '#2'},
+      { title: '請求書', icon: 'mdi-cash', to: '#3'},
+      { title: '受注管理', icon: 'mdi-file-cog', to: '#4'},
+      { title: 'レポート', icon: 'mdi-file-chart', to: '#5'},
+    ],
+    items2: [
+      { title: '受信箱', icon: 'mdi-mailbox', to: '#6'}
+    ],
+    items3: [
+      { title: '取引先', icon: 'mdi-folder-account', to: '#7'},
+      { title: '品目管理', icon: 'mdi-database-cog', to: '#8'},
+      { title: 'ご利用履歴', icon: 'mdi-history', to: '#9'},
+      { title: '設定', icon: 'mdi-cog', to: '#10'},
+    ],
+    right: null,
+  }),
+
   methods: {
-    logOut() {
+    logout() {
       this.$store.dispatch('auth/logout');
       this.$router.push('/login');
+    },
+    profile() {
+      this.$router.push('/profile');
     }
   }
 };

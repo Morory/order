@@ -1,53 +1,40 @@
 <template>
-  <div class="col-md-12">
-    <div class="card card-container">
-      <img
-        id="profile-img"
-        src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
-        class="profile-img-card"
-      />
-      <form name="form" @submit.prevent="handleLogin">
-        <div class="form-group">
-          <label for="username">Username</label>
-          <input
-            v-model="user.username"
-            v-validate="'required'"
-            type="text"
-            class="form-control"
-            name="username"
-          />
-          <div
-            v-if="errors.has('username')"
-            class="alert alert-danger"
-            role="alert"
-          >Username is required!</div>
-        </div>
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input
-            v-model="user.password"
-            v-validate="'required'"
-            type="password"
-            class="form-control"
-            name="password"
-          />
-          <div
-            v-if="errors.has('password')"
-            class="alert alert-danger"
-            role="alert"
-          >Password is required!</div>
-        </div>
-        <div class="form-group">
-          <button class="btn btn-primary btn-block" :disabled="loading">
-            <span v-show="loading" class="spinner-border spinner-border-sm"></span>
-            <span>Login</span>
-          </button>
-        </div>
-        <div class="form-group">
+  <div>
+    <v-card elevation="4" class="mx-auto my-12" max-width="400">
+      <v-card-title>
+        <h3 class="headline">
+          Login
+        </h3>
+      </v-card-title>
+      <v-divider class="mx-2"/>
+      <v-card-text>
+        <v-form @submit.prevent="handleLogin">
+          <v-text-field outline
+                        label="ID"
+                        type="text"
+                        v-model="user.username"
+                        v-validate="'required'"
+                        :rules="usernameRules"
+                        required
+                        name="username"/>
+          <v-text-field outline
+                        label="PW"
+                        type="password"
+                        v-model="user.password"
+                        v-validate="'required'"
+                        :rules="passwordRules"
+                        required
+                        name="password"/>
+          <v-btn block color="info" type="submit" class="my-2">
+              Login
+          </v-btn>
           <div v-if="message" class="alert alert-danger" role="alert">{{message}}</div>
-        </div>
-      </form>
-    </div>
+          <v-btn color="info" plain to="/register">
+            新しいアカウントを作りますか?
+          </v-btn>
+        </v-form>
+      </v-card-text>
+    </v-card>
   </div>
 </template>
 
@@ -60,7 +47,14 @@ export default {
     return {
       user: new User('', ''),
       loading: false,
-      message: ''
+      message: '',
+      valid: false,
+      usernameRules: [
+          v => !!v || 'IDを入力してください。'
+      ],
+      passwordRules: [
+          v => !!v || 'パスワードを入力してください。'
+      ]
     };
   },
   computed: {
@@ -101,38 +95,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-label {
-  display: block;
-  margin-top: 10px;
-}
-
-.card-container.card {
-  max-width: 350px !important;
-  padding: 40px 40px;
-}
-
-.card {
-  background-color: #f7f7f7;
-  padding: 20px 25px 30px;
-  margin: 0 auto 25px;
-  margin-top: 50px;
-  -moz-border-radius: 2px;
-  -webkit-border-radius: 2px;
-  border-radius: 2px;
-  -moz-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-  -webkit-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-}
-
-.profile-img-card {
-  width: 96px;
-  height: 96px;
-  margin: 0 auto 10px;
-  display: block;
-  -moz-border-radius: 50%;
-  -webkit-border-radius: 50%;
-  border-radius: 50%;
-}
-</style>
