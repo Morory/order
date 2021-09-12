@@ -15,10 +15,6 @@ export const router = new Router({
       component: Home
     },
     {
-      path: '/home',
-      component: Home
-    },
-    {
       path: '/login',
       component: Login
     },
@@ -33,22 +29,14 @@ export const router = new Router({
       component: () => import('./views/Profile.vue')
     },
     {
-      path: '/admin',
-      name: 'admin',
-      // lazy-loaded
-      component: () => import('./views/BoardAdmin.vue')
+      path: '/client',
+      name: 'client',
+      component: () => import('./views/Client.vue')
     },
     {
-      path: '/mod',
-      name: 'moderator',
-      // lazy-loaded
-      component: () => import('./views/BoardModerator.vue')
-    },
-    {
-      path: '/user',
-      name: 'user',
-      // lazy-loaded
-      component: () => import('./views/BoardUser.vue')
+      path: '/setting',
+      name: 'setting',
+      component: () => import('./views/Setting.vue')
     }
   ]
 });

@@ -95,7 +95,6 @@
         </v-list-item-content>
       </v-list-item>
       </v-list>
-
     </v-navigation-drawer>
 
     <v-main>
@@ -107,10 +106,6 @@
 <script>
 export default {
   name: 'App',
-
-  components: {
-  },
-
   data: () => ({
     items: [
       { title: 'ホーム', icon: 'mdi-home', to: '/'},
@@ -124,12 +119,11 @@ export default {
       { title: '受信箱', icon: 'mdi-mailbox', to: '#6'}
     ],
     items3: [
-      { title: '取引先', icon: 'mdi-folder-account', to: '#7'},
+      { title: '取引先', icon: 'mdi-folder-account', to: '/client'},
       { title: '品目管理', icon: 'mdi-database-cog', to: '#8'},
       { title: 'ご利用履歴', icon: 'mdi-history', to: '#9'},
-      { title: '設定', icon: 'mdi-cog', to: '#10'},
+      { title: '設定', icon: 'mdi-cog', to: '/setting'},
     ],
-    right: null,
   }),
 
   methods: {

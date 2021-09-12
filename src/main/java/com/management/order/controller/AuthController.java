@@ -44,12 +44,6 @@ public class AuthController {
 
     private final JwtUtils jwtUtils;
 
-    @GetMapping("/test")
-    public String test() {
-        log.info("test");
-        return "test";
-    }
-
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
         log.info("user signin called");

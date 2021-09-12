@@ -1,5 +1,8 @@
 package com.management.order.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,6 +19,8 @@ import java.util.Set;
         @UniqueConstraint(columnNames = "email")
 })
 @Getter @Setter
+@Builder
+@AllArgsConstructor
 public class User {
 
     @Id
@@ -40,6 +45,10 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user")
+    private Set<Client> clients = new HashSet<>();
 
     public User() {
     }

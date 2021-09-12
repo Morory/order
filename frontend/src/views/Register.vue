@@ -1,16 +1,21 @@
 <template>
   <div>
-    <v-card elevation="4" class="mx-auto my-12" max-width="400">
+    <v-card elevation="4" class="mx-auto mt-16" max-width="400">
       <v-card-title>
+        <v-layout align-center justify-space-between>
         <h3 class="headline">
           Register
         </h3>
+        <v-icon color="info" @click.prevent="$router.go(-1)">
+          mdi-keyboard-backspace
+        </v-icon>
+        </v-layout>
       </v-card-title>
       <v-divider class="mx-2"/>
       <v-card-text>
         <v-form @submit.prevent="handleRegister">
           <div v-if="!successful">
-            <v-text-field outline
+            <v-text-field
                           label="ID"
                           type="text"
                           v-model="user.username"
@@ -18,7 +23,7 @@
                           :rules="usernameRules"
                           required
                           name="username"/>
-            <v-text-field outline
+            <v-text-field
                           label="EMAIL"
                           type="email"
                           v-model="user.email"

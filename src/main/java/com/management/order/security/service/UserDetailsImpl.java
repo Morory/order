@@ -48,6 +48,14 @@ public class UserDetailsImpl implements UserDetails {
                 authorities);
     }
 
+    public User getUser() {
+        return User.builder()
+                .id(id)
+                .username(username)
+                .email(email)
+                .build();
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;

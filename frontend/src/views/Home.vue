@@ -1,14 +1,14 @@
 <template>
-  <div class="container">
-    <header class="jumbotron">
-      <h3>{{content}}</h3>
-    </header>
+  <div>
+    <v-img
+        height="100vh"
+        src="https://picsum.photos/1920/1080?random"
+        class="grey darken-4"
+    />
   </div>
 </template>
 
 <script>
-import UserService from '../services/user.service';
-
 export default {
   name: 'Home',
   data() {
@@ -16,18 +16,5 @@ export default {
       content: ''
     };
   },
-  mounted() {
-    UserService.getPublicContent().then(
-      response => {
-        this.content = response.data;
-      },
-      error => {
-        this.content =
-          (error.response && error.response.data && error.response.data.message) ||
-          error.message ||
-          error.toString();
-      }
-    );
-  }
 };
 </script>

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-card elevation="4" class="mx-auto my-12" max-width="400">
+    <v-card elevation="4" class="mx-auto mt-16" max-width="400">
       <v-card-title>
         <h3 class="headline">
           Login
@@ -9,7 +9,7 @@
       <v-divider class="mx-2"/>
       <v-card-text>
         <v-form @submit.prevent="handleLogin">
-          <v-text-field outline
+          <v-text-field
                         label="ID"
                         type="text"
                         v-model="user.username"
@@ -17,7 +17,7 @@
                         :rules="usernameRules"
                         required
                         name="username"/>
-          <v-text-field outline
+          <v-text-field
                         label="PW"
                         type="password"
                         v-model="user.password"
@@ -79,7 +79,7 @@ export default {
         if (this.user.username && this.user.password) {
           this.$store.dispatch('auth/login', this.user).then(
             () => {
-              this.$router.push('/profile');
+              this.$router.push('/');
             },
             error => {
               this.loading = false;
