@@ -72,6 +72,7 @@ public class ClientController {
                 _client.setAddress(client.getAddress());
                 _client.setManager(client.getManager());
                 _client.setTel(client.getTel());
+                _client.setBookmarked(client.isBookmarked());
                 return new ResponseEntity<>(clientRepository.save(_client), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);

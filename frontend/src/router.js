@@ -34,6 +34,11 @@ export const router = new Router({
       component: () => import('./views/Client.vue')
     },
     {
+      path: '/order',
+      name: 'order',
+      component: () => import('./views/Order.vue')
+    },
+    {
       path: '/setting',
       name: 'setting',
       component: () => import('./views/Setting.vue')

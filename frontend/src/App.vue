@@ -97,7 +97,7 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-main>
+    <v-main class="overflow-hidden">
       <router-view/>
     </v-main>
   </v-app>
@@ -112,7 +112,7 @@ export default {
       { title: '見積書', icon: 'mdi-clipboard-list', to: '#1'},
       { title: '納品書', icon: 'mdi-truck-delivery', to: '#2'},
       { title: '請求書', icon: 'mdi-cash', to: '#3'},
-      { title: '受注管理', icon: 'mdi-file-cog', to: '#4'},
+      { title: '受注管理', icon: 'mdi-file-cog', to: '/order'},
       { title: 'レポート', icon: 'mdi-file-chart', to: '#5'},
     ],
     items2: [
@@ -137,3 +137,9 @@ export default {
   }
 };
 </script>
+
+<style>
+html {
+  overflow: auto;
+}
+</style>

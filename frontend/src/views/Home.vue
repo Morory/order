@@ -1,11 +1,9 @@
 <template>
-  <div>
     <v-img
         height="100vh"
         src="https://picsum.photos/1920/1080?random"
         class="grey darken-4"
     />
-  </div>
 </template>
 
 <script>

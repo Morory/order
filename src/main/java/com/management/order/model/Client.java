@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table( name = "clients")
@@ -14,12 +16,16 @@ public class Client {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
 
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name="user_id")
     private User user;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "client")
+    private Set<Order> orders = new HashSet<>();
 
     @Column(length = 50)
     private String name;
@@ -32,6 +38,9 @@ public class Client {
 
     @Column(length = 200)
     private String address;
+
+    @Column
+    private boolean bookmarked = false;
 
     @JsonIgnore
     @Column

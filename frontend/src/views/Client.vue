@@ -21,11 +21,14 @@
           'items-per-page-text': '表示数'
         }"
       >
+        <template v-slot:header.bookmarked="{ header }">
+          <v-icon>mdi-star</v-icon>
+        </template>
       <template v-slot:top>
         <v-toolbar
             flat
         >
-          <v-col cols="12" sm="6" md="4">
+          <v-col cols="12" sm="6" md="5">
           <v-text-field
               v-model="search"
               append-icon="mdi-magnify"
@@ -43,11 +46,11 @@
               <v-btn
                   color="info"
                   dark
-                  class="mb-2"
+                  class="text-xl-body-1 font-weight-bold mb-2 px-10"
                   v-bind="attrs"
                   v-on="on"
               >
-                取引先の新規登録
+                <span>取引先の新規登録</span>
               </v-btn>
             </template>
             <v-card>
@@ -136,6 +139,9 @@
           </v-dialog>
         </v-toolbar>
       </template>
+        <template v-slot:item.bookmarked="{ item }">
+          <v-icon @click="changeBookmark(item)">{{ item.bookmarked ? 'mdi-star' : 'mdi-star-outline'}}</v-icon>
+        </template>
       <template v-slot:item.actions="{ item }">
         <v-icon
             small
@@ -156,7 +162,11 @@
       </template>
         <template v-slot:footer.prepend>
           <download-csv
-            :data = "selected">
+            :data = "selected"
+            :name = "'取引先.csv'"
+            :labels = "labels"
+            :fields = "fields"
+          >
           <v-btn plain color="primary">
             <v-icon>
               mdi-download
@@ -180,43 +190,28 @@ export default {
     'downloadCsv': JsonCsv
   },
   data: () => ({
-    json_data: [
-      {
-        'name': 'Tony Peña',
-        'city': 'New York',
-        'country': 'United States',
-        'birthdate': '1978-03-15',
-        'phone': {
-          'mobile': '1-541-754-3010',
-          'landline': '(541) 754-3010'
-        }
-      },
-      {
-        'name': 'Thessaloniki',
-        'city': 'Athens',
-        'country': 'Greece',
-        'birthdate': '1987-11-23',
-        'phone': {
-          'mobile': '+1 855 275 5071',
-          'landline': '(2741) 2621-244'
-        }
-      }
-    ],
     dialog: false,
     dialogDelete: false,
     search: '',
     selected: [],
     headers: [
-      {
-        text: '取引先',
-        align: 'start',
-        value: 'name',
-      },
+      { text: '取引先', align: 'start', value: 'name' },
+      { text: 'bookmark', value: 'bookmarked'},
       { text: '管理コード', value: 'id' },
       { text: '担当者名', value: 'manager' },
       { text: '電話番号', value: 'tel' },
       { text: '送り先', value: 'address' },
       { text: '操作', value: 'actions', sortable: false },
+    ],
+    labels: {
+      'id': '管理コード',
+      'name': '取引先名',
+      'manager': '担当者名',
+      'tel': '電話番号',
+      'address': '送り先'
+    },
+    fields: [
+        'id', 'name', 'manager', 'tel', 'address'
     ],
     clients: [],
     editedIndex: -1,
@@ -225,14 +220,16 @@ export default {
       name: '',
       manager: '',
       tel: '',
-      address: ''
+      address: '',
+      bookmarked: ''
     },
     defaultItem: {
       id: '',
       name: '',
       manager: '',
       tel: '',
-      address: ''
+      address: '',
+      bookmarked: ''
     },
   }),
 
@@ -256,6 +253,12 @@ export default {
   },
 
   methods: {
+    changeBookmark (item) {
+      this.editedIndex = this.clients.indexOf(item);
+      this.editedItem = Object.assign({}, item);
+      this.editedItem.bookmarked = !item.bookmarked;
+      this.save();
+    },
     retrieveClients () {
       ClientService.getAll()
         .then(response => {
