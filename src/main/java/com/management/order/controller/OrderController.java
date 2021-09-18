@@ -61,6 +61,28 @@ public class OrderController {
         }
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Map<String, Object>> getOrderWithOrderDetails(@PathVariable("id") long id) {
+        log.info("Order getOrderWithOrderDetails called");
+        try {
+            Optional<Order> _order = orderRepository.findById(id);
+
+            if(!_order.isPresent()) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+
+            List<OrderDetail> orderDetails = orderDetailRepository.findAllByOrderId(id);
+
+            Map<String, Object> map = new HashMap<>();
+            map.put("order", _order.get());
+            map.put("orderDetails", orderDetails);
+
+            return new ResponseEntity<>(map, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @PostMapping
     @Transactional
     public ResponseEntity<Order> createOrder(@RequestBody Map<String, Object> parameters

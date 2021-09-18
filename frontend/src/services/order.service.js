@@ -10,6 +10,10 @@ class OrderService {
         return http.get("/order", { headers: authHeader() });
     }
 
+    getOrderWithOrderDetails(id) {
+        return http.get("/order/" + id, { headers: authHeader() });
+    }
+
     updateStatus(id) {
         return http.put("/order/status/" + id, {},{ headers: authHeader() });
     }

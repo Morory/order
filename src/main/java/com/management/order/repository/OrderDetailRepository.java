@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> {
 
     @Modifying
@@ -15,4 +17,6 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> 
             , nativeQuery = true
     )
     int deleteAllByOrderId(@Param("orderId") long orderId);
+
+    List<OrderDetail> findAllByOrderId(long orderId);
 }

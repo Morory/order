@@ -16,11 +16,22 @@
             <v-tab
                 v-for="item in items"
                 :key="item.text"
+                @click.prevent="clearSearch(tab)"
             >
               {{item.text}}
               <v-icon>{{item.icon}}</v-icon>
             </v-tab>
             <v-spacer/>
+            <v-text-field
+                v-model="search"
+                prepend-inner-icon="mdi-magnify"
+                label="取引先名"
+                outlined
+                dense
+                @input="searchOrder(tab)"
+                class="mt-3 mr-10"
+            >
+            </v-text-field>
             <v-dialog
                 v-model="dialog"
                 persistent
@@ -29,7 +40,7 @@
               <template v-slot:activator="{ on, attrs }">
               <v-btn
                   v-bind="attrs"
-                  @click="prepareOrderForm"
+                  @click.prevent="prepareOrderForm"
                   v-on="on"
                   color="info"
                   class="text-xl-body-1 font-weight-bold mt-3 mr-3 px-10"
@@ -313,15 +324,17 @@
                         @click.prevent="dialogDeleteAll = true"
                     >
                       <v-icon>
-                        mdi-delete-alert-outline
+                        mdi-delete-forever
                       </v-icon>
                       リストを永久削除
                     </v-btn>
                       </v-col>
                     </v-row>
                   <v-row
-                      v-for="(order, orderIndex) in item.list"
+                      v-for="(order, orderIndex) in items[tabIndex].list"
                       :key="order.id"
+                      v-bind:id="order.id"
+                      class="order-row"
                   >
                     <v-col>
                       <v-hover v-slot="{ hover }">
@@ -331,18 +344,31 @@
                         <v-layout
                             justify-space-between
                         >
-                          <v-card-title
-                              :class="hover ? 'primary--text' : 'secondary--text'"
-                          >
-                            {{order.client.name}}
-                          </v-card-title>
+                          <v-list-item two-line>
+                            <v-list-item-content>
+                              <v-list-item-title
+                                  class="text-h5"
+                                  :class="hover ? 'primary--text' : 'secondary--text'"
+                              >
+                                {{order.client.name}}
+                              </v-list-item-title>
+                              <v-list-item-subtitle>
+                                {{order.orderNumber}}
+                              </v-list-item-subtitle>
+                            </v-list-item-content>
+                          </v-list-item>
                           <v-spacer/>
-                          <v-card-subtitle>
-                            {{order.orderNumber}}
-                          </v-card-subtitle>
+                          <v-checkbox
+                              v-model="checkedOrder"
+                              color="info"
+                              class="mb-4"
+                              :value="order.id"
+                              @change="checkOrder(order.id)"
+                          >
+                          </v-checkbox>
                           <v-hover v-if="2 === tabIndex" v-slot="{ hover }">
                             <v-icon
-                                class="mr-3 mb-5"
+                                class="mr-3 mb-7"
                                 :color="hover ? 'info' : 'lightgray'"
                                 @click.prevent="restoreOrder(tabIndex, orderIndex)"
                             >
@@ -359,26 +385,55 @@
                           </v-hover>
                         </v-layout>
                         <v-divider class="mx-3"/>
-                        <v-list>
-                          <v-list-item>
+                        <v-layout justify-space-between>
+                          <v-list-item two-line>
                             <v-list-item-content>
-                              <v-layout justify-space-between class="secondary--text">
-                                <span>{{order.title}} </span>
-                                <v-spacer/>
-                                <span>
-                                  <v-icon small>mdi-calendar</v-icon>
-                                  {{order.orderDate.substring(0, 10)}}&nbsp;~
-                                </span>
+                              <v-list-item-title
+                                  class="text--secondary text-h6"
+                              >
+                                {{order.title}}
+                              </v-list-item-title>
+                              <v-list-item-subtitle>
+                                <v-icon small>mdi-calendar</v-icon>
+                                {{order.orderDate.substring(0, 10)}}&nbsp;~
                                 <span v-if="order.deliveryDate">&nbsp;{{order.deliveryDate.substring(0, 10)}}</span>
-                              </v-layout>
+                              </v-list-item-subtitle>
                             </v-list-item-content>
                           </v-list-item>
-                        </v-list>
+                          <v-spacer/>
+                          <v-btn
+                              large
+                              text
+                              color="info"
+                              class="text-h6 mt-2 mr-2 px-6"
+                              @click.prevent="getOrder(order.id)"
+                          >
+                            受注情報を見る
+                            <v-icon>
+                              mdi-chevron-right
+                            </v-icon>
+                          </v-btn>
+                        </v-layout>
                       </v-card>
                       </v-hover>
                     </v-col>
                   </v-row>
                   </v-card>
+                  <template v-slot:footer.prepend>
+                    <download-csv
+                        :data="checkedOrderJson"
+                        :name="'受注情報.csv'"
+                        :labels="labels"
+                        :fields="fields"
+                    >
+                    <v-btn text color="info">
+                      <v-icon>
+                        mdi-download
+                      </v-icon>
+                      チェックしたリストをCSVでダウンロード
+                    </v-btn>
+                    </download-csv>
+                  </template>
                 </v-data-iterator>
               </v-container>
             </v-tab-item>
@@ -425,13 +480,19 @@
 <script>
 import OrderService from "../services/order.service";
 import ClientService from "../services/client.service";
+import JsonCsv from 'vue-json-csv';
 
 export default {
   name: "Order",
+  components: {
+    'downloadCsv': JsonCsv
+  },
   data: () => ({
     menu1: false,
     menu2: false,
     tab: null,
+    search: '',
+    checkbox: '',
     items: [
       {
         text: "未処理",
@@ -454,8 +515,7 @@ export default {
     dialogRestore: false,
     dialogDeleteAll: false,
     show4: false,
-    clientList: [
-    ],
+    clientList: [],
     statuses: [
       {
         text: '未処理',
@@ -472,7 +532,7 @@ export default {
     totalPrice: 0,
     valid: false,
     clientRules: [
-        v => !!v || '取引先を選択してください。'
+      v => !!v || '取引先を選択してください。'
     ],
     editedOrder: {
       id: '',
@@ -495,9 +555,74 @@ export default {
       }],
       tabIndex: '',
       orderIndex: '',
-    }
+    },
+    checkedOrder: [],
+    checkedOrderJson: [],
+    labels: {
+      'orderNumber': '注文番号',
+      'title': '件名',
+      'client': '取引先名',
+      'orderDate': '注文日',
+      'deliveryDate': '納期日',
+      'orderDetails': '注文詳細情報',
+    },
+    fields: [
+      'orderNumber', 'title', 'client', 'orderDate', 'deliveryDate', 'orderDetails'
+    ],
   }),
   methods: {
+    getOrder(id) {
+      alert(id);
+    },
+    checkOrder(id) {
+      if(this.checkedOrder.includes(id)) {
+        OrderService.getOrderWithOrderDetails(id)
+            .then(response => {
+              if(response.status === 200) {
+                let order = response.data.order;
+                let orderDetails = response.data.orderDetails;
+                let str = "";
+                orderDetails.forEach(function(e, idx, arr) {
+                  str += "{" + e.name + "," + e.amount + "," + e.unit + "," + e.price + "," + e.taxRate + "}";
+                  if(!Object.is(arr.length - 1, idx)) {
+                    str += ","
+                  }
+                })
+                order.orderDate = order.orderDate.toString().substr(0, 10);
+                if(order.deliveryDate) {
+                  order.deliveryDate = order.deliveryDate.toString().substr(0,10);
+                }
+                order.client = order.client.name;
+                order.orderDetails = str;
+                this.checkedOrderJson.push(order);
+              }
+            })
+      } else {
+        let index = this.checkedOrderJson.findIndex((item) => {
+          return item.id === id;
+        })
+        this.checkedOrderJson.splice(index, 1);
+      }
+    },
+    searchOrder(tabIndex) {
+      let search = this.search;
+      let newArray = this.items[tabIndex].list.filter(function(e) {
+        return e.client.name.includes(search);
+      })
+      this.items[tabIndex].list.forEach(e => {
+        document.getElementById(e.id).style.display = "none";
+      })
+      newArray.forEach(e => {
+        document.getElementById(e.id).style.display = "";
+      })
+    },
+    clearSearch() {
+      this.search = '';
+      let target = document.getElementsByClassName('order-row');
+      for(let i = 0; i < target.length; i++) {
+        target[i].style.display = "";
+      }
+    },
     setClientList() {
       ClientService.getAll()
         .then(response => {
