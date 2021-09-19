@@ -104,15 +104,55 @@ public class OrderController {
                     .title(parameters.get("title").toString())
                     .completed(Boolean.parseBoolean(parameters.get("completed").toString()))
                     .build();
-            List<OrderDetail> list = new ObjectMapper().readValue(
+            List<OrderDetail> orderDetails = new ObjectMapper().readValue(
                     parameters.get("list").toString(), new TypeReference<ArrayList<OrderDetail>>() {});
-            for(OrderDetail orderDetail : list) {
+            for(OrderDetail orderDetail : orderDetails) {
                 orderDetail.setOrder(_order);
             }
-            _order.setOrderDetails(new HashSet<>(list));
+            _order.setOrderDetails(new HashSet<>(orderDetails));
             orderRepository.save(_order);
             return new ResponseEntity<>(_order, HttpStatus.CREATED);
         } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping
+    @Transactional
+    public ResponseEntity<Order> updateOrder(@RequestBody Map<String, Object> parameters
+            , @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        log.info("Order Update called");
+        try {
+            Optional<Client> client = clientRepository.findById(Long.parseLong(parameters.get("clientId").toString()));
+
+            if(!client.isPresent()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+
+            Optional<Order> _order = orderRepository.findById(Long.parseLong(parameters.get("id").toString()));
+
+            if(!_order.isPresent()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            Order order = _order.get();
+            order.setClient(client.get());
+            order.setUser(userDetails.getUser());
+            order.setOrderDate(dateParseOf(parameters.get("orderDate")));
+            order.setDeliveryDate(dateParseOf(parameters.get("deliveryDate")));
+            order.setOrderNumber(parameters.get("orderNumber").toString());
+            order.setTitle(parameters.get("title").toString());
+            order.setCompleted(Boolean.parseBoolean(parameters.get("completed").toString()));
+            List<OrderDetail> orderDetails = new ObjectMapper().readValue(
+                    parameters.get("list").toString(), new TypeReference<ArrayList<OrderDetail>>() {});
+            for(OrderDetail orderDetail : orderDetails) {
+                orderDetail.setOrder(order);
+            }
+            order.setOrderDetails(new HashSet<>(orderDetails));
+            orderDetailRepository.deleteAllByOrderId(order.getId());
+            orderRepository.save(order);
+            return new ResponseEntity<>(order, HttpStatus.OK);
+        } catch (Exception e) {
+            log.info(e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

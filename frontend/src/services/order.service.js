@@ -18,6 +18,10 @@ class OrderService {
         return http.put("/order/status/" + id, {},{ headers: authHeader() });
     }
 
+    update(data) {
+        return http.put("/order", data, { headers: authHeader() });
+    }
+
     create(data) {
         return http.post("/order", data, { headers: authHeader() });
     }

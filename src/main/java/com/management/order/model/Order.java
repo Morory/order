@@ -50,7 +50,7 @@ public class Order {
     private boolean deleted;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     private Set<OrderDetail> orderDetails = new HashSet<>();
 
     public Order() {

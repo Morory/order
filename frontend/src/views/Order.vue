@@ -48,17 +48,17 @@
                 受注情報の作成
               </v-btn>
               </template>
-              <v-card>
+              <v-card id="pdfCard">
                 <v-form
                     @submit.prevent="save"
                 >
                 <v-card-title>
-                  <span class="text-h5">受注情報の作成</span>
+                  <span class="text-h5">受注情報</span>
                   <v-spacer></v-spacer>
                   <v-btn
                       plain
                       small
-                      @click="dialog = false"
+                      @click="clear"
                   >
                     <v-icon>mdi-close</v-icon>
                   </v-btn>
@@ -152,6 +152,41 @@
                           >
                           </v-date-picker>
                         </v-menu>
+                      </v-col>
+                    </v-row>
+                    <v-row v-if="editedOrder.client">
+                      <v-col
+                          cols="12"
+                          sm="4"
+                      >
+                        <v-text-field
+                            v-model="editedOrder.client.manager"
+                            label="担当者名"
+                            readonly
+                        >
+                        </v-text-field>
+                      </v-col>
+                      <v-col
+                          cols="12"
+                          sm="4"
+                      >
+                        <v-text-field
+                            v-model="editedOrder.client.tel"
+                            label="電話番号"
+                            readonly
+                        >
+                        </v-text-field>
+                      </v-col>
+                      <v-col
+                          cols="12"
+                          sm="4"
+                      >
+                        <v-text-field
+                            v-model="editedOrder.client.address"
+                            label="送り先"
+                            readonly
+                        >
+                        </v-text-field>
                       </v-col>
                     </v-row>
                     <v-row>
@@ -272,15 +307,25 @@
                   <v-container
                   >
                     <div class="text-right">
-                      <span>小計 <span class="text-h5">{{subTotalPrice}}</span>円</span>
+                      <span>小計 <span class="text-h5">{{editedOrder.subTotalPrice}}</span>円</span>
                       <v-spacer/>
-                      <span>消費税 <span class="text-h5">{{taxPrice}}</span>円</span>
+                      <span>消費税 <span class="text-h5">{{editedOrder.taxPrice}}</span>円</span>
                       <v-spacer/>
-                      <span>合計 <span class="text-h5">{{totalPrice}}</span>円</span>
+                      <span>合計 <span class="text-h5">{{editedOrder.totalPrice}}</span>円</span>
                     </div>
                   </v-container>
                 </v-card-text>
                 <v-card-actions>
+                  <v-btn
+                      text
+                      color="info"
+                      @click.prevent="makePDF"
+                  >
+                    <v-icon>
+                      mdi-download
+                    </v-icon>
+                    PDF
+                  </v-btn>
                   <v-spacer></v-spacer>
                   <v-btn
                     color="blue darken-1"
@@ -331,7 +376,7 @@
                       </v-col>
                     </v-row>
                   <v-row
-                      v-for="(order, orderIndex) in items[tabIndex].list"
+                      v-for="(order) in items[tabIndex].list"
                       :key="order.id"
                       v-bind:id="order.id"
                       class="order-row"
@@ -368,9 +413,9 @@
                           </v-checkbox>
                           <v-hover v-if="2 === tabIndex" v-slot="{ hover }">
                             <v-icon
-                                class="mr-3 mb-7"
+                                class="mr-3 mb-5"
                                 :color="hover ? 'info' : 'lightgray'"
-                                @click.prevent="restoreOrder(tabIndex, orderIndex)"
+                                @click.prevent="restoreOrder(order.id)"
                             >
                               mdi-restore
                             </v-icon>
@@ -379,7 +424,7 @@
                             <v-icon
                               class="mr-3 mb-5"
                               :color="hover ? 'info' : 'lightgray'"
-                              @click.prevent="deleteOrder(tabIndex, orderIndex)"
+                              @click.prevent="deleteOrder(order.id)"
                             >mdi-delete
                             </v-icon>
                           </v-hover>
@@ -455,7 +500,7 @@
             <v-card-title class="text-center justify-center">この受注情報を復旧しますか?</v-card-title>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" text @click="dialogRestore = false">キャンセル</v-btn>
+              <v-btn color="blue darken-1" text @click="dialogRestore = false; this.editedOrder.id = ''">キャンセル</v-btn>
               <v-btn color="blue darken-1" text @click="restoreOrderConfirm">復旧する</v-btn>
               <v-spacer></v-spacer>
             </v-card-actions>
@@ -466,7 +511,7 @@
             <v-card-title class="text-center justify-center">リストを本当に永久削除しますか。<br/>削除した後は復旧できません。</v-card-title>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" text @click="dialogDeleteAll = false">キャンセル</v-btn>
+              <v-btn color="blue darken-1" text @click="dialogDeleteAll = false; this.editedOrder.id = ''">キャンセル</v-btn>
               <v-btn color="blue darken-1" text @click="deleteAllOrderConfirm">永久削除する</v-btn>
               <v-spacer></v-spacer>
             </v-card-actions>
@@ -481,6 +526,8 @@
 import OrderService from "../services/order.service";
 import ClientService from "../services/client.service";
 import JsonCsv from 'vue-json-csv';
+import html2canvas from 'html2canvas';
+import jspdf from 'jspdf';
 
 export default {
   name: "Order",
@@ -527,9 +574,6 @@ export default {
       }
     ],
     taxRates: ['10%', '15%'],
-    subTotalPrice: 0,
-    taxPrice: 0,
-    totalPrice: 0,
     valid: false,
     clientRules: [
       v => !!v || '取引先を選択してください。'
@@ -553,9 +597,12 @@ export default {
         taxRate: "10%",
         rowPrice: ""
       }],
-      tabIndex: '',
-      orderIndex: '',
+      subTotalPrice: 0,
+      taxPrice: 0,
+      totalPrice: 0,
     },
+    tabIndex: '',
+    orderIndex: '',
     checkedOrder: [],
     checkedOrderJson: [],
     labels: {
@@ -569,10 +616,70 @@ export default {
     fields: [
       'orderNumber', 'title', 'client', 'orderDate', 'deliveryDate', 'orderDetails'
     ],
+    editingStatus: '',
   }),
   methods: {
+    makePDF() {
+      window.html2canvas = html2canvas;
+      let doc = new jspdf("p", "mm", "a4");
+      let element = document.querySelector('#pdfCard');
+      let canvas = doc.canvas;
+      const pageWidth = 210;
+      canvas.width = pageWidth;
+
+      let w = element.offsetWidth;
+      let h = element.offsetHeight;
+      let imgHeight = pageWidth * h / w;
+
+      html2canvas(element).then(function(canvas) {
+        let img = canvas.toDataURL();
+        doc.addImage(img, 'png', 0, 0, pageWidth, imgHeight);
+        doc.save("受注情報.pdf");
+      })
+    },
+    zf(n, digits) {
+      let zero = '';
+      n = n.toString();
+
+      if(n.length < digits) {
+        for(let i = 0; i < digits - n.length; i++) {
+          zero += '0';
+        }
+      }
+      return zero + n;
+    },
+    timezoneChange(utcTime) {
+      let time = new Date(utcTime);
+      return time.getFullYear() + "-" + this.zf(time.getMonth()+1, 2) + "-" + time.getDate()
+    },
     getOrder(id) {
-      alert(id);
+      OrderService.getOrderWithOrderDetails(id)
+        .then(response => {
+          if(response.status === 200) {
+            let order = response.data.order;
+            let orderDetails = response.data.orderDetails
+            this.editedOrder = {
+              id: order.id,
+              clientId: order.client.id,
+              client: order.client,
+              orderDate: this.timezoneChange(order.orderDate),
+              deliveryDate: order.deliveryDate ? this.timezoneChange(order.deliveryDate) : '',
+              orderNumber: order.orderNumber,
+              title: order.title,
+              completed: {
+                text: order.completed ? '処理済' : '未処理',
+                value: order.completed
+              },
+              orderDetails: orderDetails,
+              subTotalPrice: 0,
+              taxPrice: 0,
+              totalPrice: 0,
+            }
+            this.compute('justDo');
+            this.dialog = true;
+            this.editingStatus = 'update';
+          }
+        })
     },
     checkOrder(id) {
       if(this.checkedOrder.includes(id)) {
@@ -632,10 +739,17 @@ export default {
         })
     },
     setOrderList() {
+      this.items.forEach(e => {
+        e.list = [];
+      })
       OrderService.getAll()
         .then(response => {
           if(response.status === 200) {
             response.data.forEach(e => {
+              e.orderDate = this.timezoneChange(e.orderDate);
+              if(e.deliveryDate) {
+                e.deliveryDate = this.timezoneChange(e.deliveryDate);
+              }
               if(e.deleted === true) {
                 this.items[2].list.push(e);
               } else if(e.completed === true) {
@@ -657,36 +771,33 @@ export default {
         });
     },
     prepareOrderForm() {
-      this.setClientList();
+      this.editingStatus = 'create';
+      this.clear();
       this.setOrderNumber();
     },
-    deleteOrder(tabIndex, orderIndex) {
-      this.tabIndex = tabIndex;
-      this.orderIndex = orderIndex;
+    deleteOrder(id) {
+      this.editedOrder.id = id;
       this.dialogDelete = true;
     },
-    restoreOrder(tabIndex, orderIndex) {
-      this.tabIndex = tabIndex;
-      this.orderIndex = orderIndex;
+    restoreOrder(id) {
+      this.editedOrder.id = id;
       this.dialogRestore = true;
     },
     deleteOrderConfirm() {
-      OrderService.updateStatus(this.items[this.tabIndex].list[this.orderIndex].id)
+      OrderService.updateStatus(this.editedOrder.id)
         .then(response => {
           if(response.status === 200) {
             this.dialogDelete = false;
-            this.items[2].list.push(this.items[this.tabIndex].list[this.orderIndex]);
-            this.items[this.tabIndex].list.splice(this.orderIndex, 1);
+            this.setOrderList();
           }
         })
     },
     restoreOrderConfirm() {
-      OrderService.updateStatus(this.items[this.tabIndex].list[this.orderIndex].id)
+      OrderService.updateStatus(this.editedOrder.id)
           .then(response => {
             if(response.status === 200) {
               this.dialogRestore = false;
-              this.items[response.data.completed ? 1 : 0].list.push(this.items[this.tabIndex].list[this.orderIndex]);
-              this.items[this.tabIndex].list.splice(this.orderIndex, 1);
+              this.setOrderList();
             }
           })
     },
@@ -695,7 +806,7 @@ export default {
         .then(response => {
           if(response.status === 200) {
             this.dialogDeleteAll = false;
-            this.items[2].list = [];
+            this.setOrderList();
           }
         })
     },
@@ -711,7 +822,7 @@ export default {
     },
     removeRow(index) {
       this.editedOrder.orderDetails.splice(index, 1);
-      this.compute('remove');
+      this.compute('justDo');
     },
     save() {
       if(!this.editedOrder.clientId) {
@@ -722,22 +833,33 @@ export default {
       this.editedOrder.completed = this.editedOrder.completed.value;
       this.editedOrder.list = JSON.stringify(this.editedOrder.orderDetails);
       delete this.editedOrder.orderDetails;
+
+      if(this.editingStatus === 'create') {
       OrderService.create(this.editedOrder)
           .then(response => {
             if(response.status === 201 || response.status === 200) {
-              this.dialog = false;
-              if(response.data.completed === false) {
-                this.items[0].list.push(response.data);
-              } else {
-                this.items[1].list.push(response.data);
-              }
+              this.setOrderList();
               this.clear();
             } else {
               alert("エラーが発生しました");
             }
           });
+      }
+
+      if(this.editingStatus === 'update') {
+        OrderService.update(this.editedOrder)
+            .then(response => {
+              if(response.status === 200) {
+                this.setOrderList();
+                this.clear();
+              } else {
+                alert("エラーが発生しました");
+              }
+            })
+      }
     },
     clear() {
+      this.dialog = false;
       this.editedOrder = {
         id: '',
         clientId: '',
@@ -756,27 +878,28 @@ export default {
           price: "",
           taxRate: "10%",
           rowPrice: ""
-        }]
+        }],
+        subTotalPrice : 0,
+        taxPrice : 0,
+        totalPrice : 0,
       }
-      this.subTotalPrice = 0;
-      this.taxPrice = 0;
-      this.totalPrice = 0;
     },
     compute(index) {
+      let editedOrder = this.editedOrder;
       let orderDetails = this.editedOrder.orderDetails;
       let orderDetail = this.editedOrder.orderDetails[index];
-      if(index === 'remove' || ( orderDetail.price && orderDetail.amount )) {
+      if(index === 'justDo' || ( orderDetail.price && orderDetail.amount )) {
         // 계산해야할 조건이 충족되면 계산하기 전에 초기화
-        this.subTotalPrice = Number(0);
-        this.taxPrice = Number(0);
-        this.totalPrice = Number(0);
+        editedOrder.subTotalPrice = Number(0);
+        editedOrder.taxPrice = Number(0);
+        editedOrder.totalPrice = Number(0);
         // 계산 시작
         for(let i = 0; i < orderDetails.length; i++) {
           if(orderDetails[i].price && orderDetails[i].amount) {
             orderDetails[i].rowPrice = Number(orderDetails[i].amount * orderDetails[i].price);
-            this.subTotalPrice += orderDetails[i].rowPrice;
-            this.taxPrice += Math.round( orderDetails[i].price * ( orderDetails[i].taxRate.replace("%", "") / 100 ) ) * orderDetails[i].amount;
-            this.totalPrice = this.subTotalPrice + this.taxPrice;
+            editedOrder.subTotalPrice += orderDetails[i].rowPrice;
+            editedOrder.taxPrice += Math.round( orderDetails[i].price * ( orderDetails[i].taxRate.replace("%", "") / 100 ) ) * orderDetails[i].amount;
+            editedOrder.totalPrice = editedOrder.subTotalPrice + editedOrder.taxPrice;
           }
         }
       }
@@ -784,6 +907,7 @@ export default {
   },
   created() {
     this.setOrderList();
+    this.setClientList();
   }
 }
 </script>
