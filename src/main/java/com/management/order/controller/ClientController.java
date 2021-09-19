@@ -19,7 +19,6 @@ import java.util.Optional;
 @RequestMapping("/api/client")
 @Slf4j
 @AllArgsConstructor
-@CrossOrigin(origins = "http://ec2-13-208-184-49.ap-northeast-3.compute.amazonaws.com:8080")
 public class ClientController {
 
     private final ClientRepository clientRepository;
