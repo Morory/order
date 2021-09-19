@@ -25,6 +25,7 @@ import java.util.*;
 @RequestMapping("/api/order")
 @Slf4j
 @AllArgsConstructor
+@CrossOrigin(origins = "http://localhost:8080")
 public class OrderController {
 
     private final OrderRepository orderRepository;

@@ -19,6 +19,7 @@ import java.util.Optional;
 @RequestMapping("/api/client")
 @Slf4j
 @AllArgsConstructor
+@CrossOrigin(origins = "http://localhost:8080")
 public class ClientController {
 
     private final ClientRepository clientRepository;

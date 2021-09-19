@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/auth")
 @Slf4j
 @AllArgsConstructor
+@CrossOrigin(origins = "http://localhost:8080")
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
