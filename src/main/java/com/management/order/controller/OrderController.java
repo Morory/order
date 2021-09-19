@@ -108,8 +108,8 @@ public class OrderController {
                     parameters.get("list").toString(), new TypeReference<ArrayList<OrderDetail>>() {});
             for(OrderDetail orderDetail : orderDetails) {
                 orderDetail.setOrder(_order);
+                orderDetailRepository.save(orderDetail);
             }
-            _order.setOrderDetails(new HashSet<>(orderDetails));
             orderRepository.save(_order);
             return new ResponseEntity<>(_order, HttpStatus.CREATED);
         } catch (Exception e) {
