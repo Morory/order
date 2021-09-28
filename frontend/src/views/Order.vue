@@ -48,10 +48,11 @@
                 受注情報の作成
               </v-btn>
               </template>
-              <v-card id="pdfCard">
+              <v-card>
                 <v-form
                     @submit.prevent="save"
                 >
+                  <div id="pdfCard">
                 <v-card-title>
                   <span class="text-h5">受注情報</span>
                   <v-spacer></v-spacer>
@@ -315,6 +316,7 @@
                     </div>
                   </v-container>
                 </v-card-text>
+                  </div>
                 <v-card-actions>
                   <v-btn
                       text

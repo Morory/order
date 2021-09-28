@@ -134,7 +134,7 @@ export default {
     profile() {
       this.$router.push('/profile');
     }
-  }
+  },
 };
 </script>
 
