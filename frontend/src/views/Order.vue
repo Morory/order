@@ -900,7 +900,7 @@ export default {
           if(orderDetails[i].price && orderDetails[i].amount) {
             orderDetails[i].rowPrice = Number(orderDetails[i].amount * orderDetails[i].price);
             editedOrder.subTotalPrice += orderDetails[i].rowPrice;
-            editedOrder.taxPrice += Math.round( orderDetails[i].price * ( orderDetails[i].taxRate.replace("%", "") / 100 ) ) * orderDetails[i].amount;
+            editedOrder.taxPrice += Math.floor( orderDetails[i].price * ( orderDetails[i].taxRate.replace("%", "") / 100 ) ) * orderDetails[i].amount;
             editedOrder.totalPrice = editedOrder.subTotalPrice + editedOrder.taxPrice;
           }
         }
