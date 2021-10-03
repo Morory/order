@@ -659,7 +659,10 @@ export default {
         .then(response => {
           if(response.status === 200) {
             let order = response.data.order;
-            let orderDetails = response.data.orderDetails
+            let orderDetails = response.data.orderDetails;
+            orderDetails.forEach(function(item) {
+              item.rowPrice = 0;
+            })
             this.editedOrder = {
               id: order.id,
               clientId: order.client.id,
