@@ -1,6 +1,5 @@
 package com.management.order.service;
 
-import com.management.order.controller.OrderController;
 import com.management.order.model.Client;
 import com.management.order.model.Order;
 import com.management.order.payload.request.SignupRequest;
@@ -8,10 +7,6 @@ import com.management.order.repository.ClientRepository;
 import com.management.order.repository.OrderRepository;
 import com.management.order.security.service.UserDetailsImpl;
 import com.management.order.security.service.UserDetailsServiceImpl;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONString;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
