@@ -93,11 +93,13 @@ public class OrderServiceImpl implements IOrderService {
                     .title(parameters.get("title").toString())
                     .completed(Boolean.parseBoolean(parameters.get("completed").toString()))
                     .build();
-            List<OrderDetail> orderDetails = new ObjectMapper().readValue(
-                    parameters.get("list").toString(), new TypeReference<ArrayList<OrderDetail>>() {});
-            for(OrderDetail orderDetail : orderDetails) {
-                orderDetail.setOrder(_order);
-                orderDetailRepository.save(orderDetail);
+            if(parameters.containsKey("list")) {
+                List<OrderDetail> orderDetails = new ObjectMapper().readValue(
+                        parameters.get("list").toString(), new TypeReference<ArrayList<OrderDetail>>() {});
+                for(OrderDetail orderDetail : orderDetails) {
+                    orderDetail.setOrder(_order);
+                    orderDetailRepository.save(orderDetail);
+                }
             }
             orderRepository.save(_order);
             return new ResponseEntity<>(_order, HttpStatus.CREATED);
@@ -128,13 +130,15 @@ public class OrderServiceImpl implements IOrderService {
             order.setOrderNumber(parameters.get("orderNumber").toString());
             order.setTitle(parameters.get("title").toString());
             order.setCompleted(Boolean.parseBoolean(parameters.get("completed").toString()));
-            List<OrderDetail> orderDetails = new ObjectMapper().readValue(
-                    parameters.get("list").toString(), new TypeReference<ArrayList<OrderDetail>>() {});
-            for(OrderDetail orderDetail : orderDetails) {
-                orderDetail.setOrder(order);
+            if(parameters.containsKey("list")) {
+                List<OrderDetail> orderDetails = new ObjectMapper().readValue(
+                        parameters.get("list").toString(), new TypeReference<ArrayList<OrderDetail>>() {});
+                for(OrderDetail orderDetail : orderDetails) {
+                    orderDetail.setOrder(order);
+                }
+                order.setOrderDetails(new HashSet<>(orderDetails));
+                orderDetailRepository.deleteAllByOrderId(order.getId());
             }
-            order.setOrderDetails(new HashSet<>(orderDetails));
-            orderDetailRepository.deleteAllByOrderId(order.getId());
             orderRepository.save(order);
             return new ResponseEntity<>(order, HttpStatus.OK);
         } catch (Exception e) {

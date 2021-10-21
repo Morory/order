@@ -4,7 +4,6 @@ import com.management.order.model.Client;
 import com.management.order.payload.request.SignupRequest;
 import com.management.order.security.service.UserDetailsImpl;
 import com.management.order.security.service.UserDetailsServiceImpl;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,5 +79,18 @@ public class ClientServiceTest {
         savedClient.setName(updateName);
         Client updatedClient = clientService.updateClient(savedClient, userDetails).getBody();
         assertEquals(updateName, updatedClient.getName());
+    }
+
+    @Test
+    void deletedClient() {
+        Client client = Client.builder()
+                .name("TestName")
+                .address("TestAddress")
+                .manager("TestManager")
+                .tel("TestTel")
+                .build();
+        Client savedClient = clientService.createClient(client, userDetails).getBody();
+        ResponseEntity<HttpStatus> responseEntity = clientService.deleteClient(savedClient.getId(), userDetails);
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     }
 }
