@@ -4,7 +4,7 @@
       <v-flex sm12 md8 offset-md2>
         <v-layout align-center justify-space-between>
           <span class="text-h4">
-            受注管理
+            수주관리
           </span>
         </v-layout>
         <v-divider class="mt-7 mb-3"/>
@@ -25,7 +25,7 @@
             <v-text-field
                 v-model="search"
                 prepend-inner-icon="mdi-magnify"
-                label="取引先名"
+                label="거래처명"
                 outlined
                 dense
                 @input="searchOrder(tab)"
@@ -45,7 +45,7 @@
                   color="info"
                   class="text-xl-body-1 font-weight-bold mt-3 mr-3 px-10"
               >
-                受注情報の作成
+                수주정보 작성
               </v-btn>
               </template>
               <v-card>
@@ -54,7 +54,7 @@
                 >
                   <div id="pdfCard">
                 <v-card-title>
-                  <span class="text-h5">受注情報</span>
+                  <span class="text-h5">수주정보</span>
                   <v-spacer></v-spacer>
                   <v-btn
                       plain
@@ -74,7 +74,7 @@
                           md="6"
                       >
                         <v-select
-                            label="取引先名"
+                            label="거래처명"
                             v-model="editedOrder.clientId"
                             :items="clientList"
                             item-text="name"
@@ -82,7 +82,7 @@
                             :rules="clientRules"
                             >
                           <template v-slot:no-data>
-                            先に取引先を登録してください。
+                            먼저 거래처를 등록해주세요.
                           </template>
                         </v-select>
                       </v-col>
@@ -101,7 +101,7 @@
                           <template v-slot:activator="{ on, attrs }">
                             <v-text-field
                                 v-model="editedOrder.orderDate"
-                                label="注文日"
+                                label="주문일"
                                 prepend-inner-icon="mdi-calendar"
                                 readonly
                                 v-bind="attrs"
@@ -109,7 +109,7 @@
                             ></v-text-field>
                           </template>
                           <v-date-picker
-                              locale="ja-JP"
+                              locale="ko-KR"
                               no-title
                               scrollable
                               v-model="editedOrder.orderDate"
@@ -134,18 +134,18 @@
                           <template v-slot:activator="{ on, attrs }">
                             <v-text-field
                                 v-model="editedOrder.deliveryDate"
-                                label="納期日"
+                                label="납기일"
                                 prepend-inner-icon="mdi-calendar"
                                 readonly
                                 clearable
                                 @click:clear="editedOrder.deliveryDate = null"
-                                placeholder="指定なし"
+                                placeholder="미정"
                                 v-bind="attrs"
                                 v-on="on"
                             ></v-text-field>
                           </template>
                           <v-date-picker
-                              locale="ja-JP"
+                              locale="ko-KR"
                               no-title
                               scrollable
                               v-model="editedOrder.deliveryDate"
@@ -162,7 +162,7 @@
                       >
                         <v-text-field
                             v-model="editedOrder.client.manager"
-                            label="担当者名"
+                            label="담당자명"
                             readonly
                         >
                         </v-text-field>
@@ -173,7 +173,7 @@
                       >
                         <v-text-field
                             v-model="editedOrder.client.tel"
-                            label="電話番号"
+                            label="전화번호"
                             readonly
                         >
                         </v-text-field>
@@ -184,7 +184,7 @@
                       >
                         <v-text-field
                             v-model="editedOrder.client.address"
-                            label="送り先"
+                            label="보낼 주소"
                             readonly
                         >
                         </v-text-field>
@@ -197,7 +197,7 @@
                       >
                         <v-text-field
                             v-model="editedOrder.orderNumber"
-                            label="注文番号"
+                            label="주문번호"
                             readonly
                         >
                         </v-text-field>
@@ -207,7 +207,7 @@
                           sm="4"
                       >
                         <v-text-field
-                            label="件名"
+                            label="건명"
                             v-model="editedOrder.title"
                         >
                         </v-text-field>
@@ -218,7 +218,7 @@
                       >
                         <v-select
                             v-model="editedOrder.completed"
-                            label="ステータス"
+                            label="상태"
                             :items="statuses"
                             item-text="text"
                             item-value="value"
@@ -234,22 +234,22 @@
                         <thead>
                           <tr>
                             <th class="text-center" style="width: 30%">
-                              品番、品名
+                              품명
                             </th>
                             <th class="text-center" style="width: 13%">
-                              数量
+                              수량
                             </th>
                             <th class="text-center" style="width: 10%">
-                              単位
+                              단위
                             </th>
                             <th class="text-center" style="width: 15%">
-                              単価
+                              단가
                             </th>
                             <th class="text-center" style="width: 13%">
-                              税区分
+                              세구분
                             </th>
                             <th class="text-center" style="width: 18%">
-                              金額
+                              금액
                             </th>
                           </tr>
                         </thead>
@@ -299,7 +299,7 @@
                             text
                             color="primary"
                             @click.prevent="addRow">
-                          <span>行の追加 +</span>
+                          <span>행 추가 +</span>
                         </v-btn>
                       </template>
                     </v-simple-table>
@@ -308,11 +308,11 @@
                   <v-container
                   >
                     <div class="text-right">
-                      <span>小計 <span class="text-h5">{{editedOrder.subTotalPrice}}</span>円</span>
+                      <span>소계 <span class="text-h5">{{editedOrder.subTotalPrice}}</span>원</span>
                       <v-spacer/>
-                      <span>消費税 <span class="text-h5">{{editedOrder.taxPrice}}</span>円</span>
+                      <span>소비세 <span class="text-h5">{{editedOrder.taxPrice}}</span>원</span>
                       <v-spacer/>
-                      <span>合計 <span class="text-h5">{{editedOrder.totalPrice}}</span>円</span>
+                      <span>합계 <span class="text-h5">{{editedOrder.totalPrice}}</span>원</span>
                     </div>
                   </v-container>
                 </v-card-text>
@@ -335,7 +335,7 @@
                     text
                     type="submit"
                   >
-                    保存
+                    완료
                   </v-btn>
                 </v-card-actions>
                 </v-form>
@@ -353,12 +353,12 @@
                 <v-data-iterator
                     :items="item.list"
                     :footer-props="{
-                       'items-per-page-text': '表示数'
+                       'items-per-page-text': '표시수'
                     }"
                 >
                   <template v-slot:no-data>
                     <div class="text-center">
-                    <span class="lightgray--text text-xl-body-1">登録された受注情報がありません。</span>
+                    <span class="lightgray--text text-xl-body-1">등록된 수주정보가 없습니다.</span>
                     </div>
                   </template>
                   <v-card flat>
@@ -373,7 +373,7 @@
                       <v-icon>
                         mdi-delete-forever
                       </v-icon>
-                      リストを永久削除
+                      리스트를 영구삭제
                     </v-btn>
                       </v-col>
                     </v-row>
@@ -455,7 +455,7 @@
                               class="text-h6 mt-2 mr-2 px-6"
                               @click.prevent="getOrder(order.id)"
                           >
-                            受注情報を見る
+                            수주정보 보기
                             <v-icon>
                               mdi-chevron-right
                             </v-icon>
@@ -469,7 +469,7 @@
                   <template v-slot:footer.prepend>
                     <download-csv
                         :data="checkedOrderJson"
-                        :name="'受注情報.csv'"
+                        :name="'수주정보.csv'"
                         :labels="labels"
                         :fields="fields"
                     >
@@ -477,7 +477,7 @@
                       <v-icon>
                         mdi-download
                       </v-icon>
-                      チェックしたリストをCSVでダウンロード
+                      체크한 목록을 CSV 다운로드
                     </v-btn>
                     </download-csv>
                   </template>
@@ -488,33 +488,33 @@
         </v-card>
         <v-dialog v-model="dialogDelete" max-width="500px">
           <v-card>
-            <v-card-title class="text-center justify-center">この受注情報をゴミ箱に捨てますか?</v-card-title>
+            <v-card-title class="text-center justify-center">이 수주정보를 휴지통에 버리시겠습니까?</v-card-title>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" text @click="dialogDelete = false">キャンセル</v-btn>
-              <v-btn color="blue darken-1" text @click="deleteOrderConfirm">捨てる</v-btn>
+              <v-btn color="blue darken-1" text @click="dialogDelete = false">취소</v-btn>
+              <v-btn color="blue darken-1" text @click="deleteOrderConfirm">버리기</v-btn>
               <v-spacer></v-spacer>
             </v-card-actions>
           </v-card>
         </v-dialog>
         <v-dialog v-model="dialogRestore" max-width="500px">
           <v-card>
-            <v-card-title class="text-center justify-center">この受注情報を復旧しますか?</v-card-title>
+            <v-card-title class="text-center justify-center">이 수주정보를 복구하시겠습니까?</v-card-title>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" text @click="dialogRestore = false; this.editedOrder.id = ''">キャンセル</v-btn>
-              <v-btn color="blue darken-1" text @click="restoreOrderConfirm">復旧する</v-btn>
+              <v-btn color="blue darken-1" text @click="dialogRestore = false; this.editedOrder.id = ''">취소</v-btn>
+              <v-btn color="blue darken-1" text @click="restoreOrderConfirm">복구하기</v-btn>
               <v-spacer></v-spacer>
             </v-card-actions>
           </v-card>
         </v-dialog>
         <v-dialog v-model="dialogDeleteAll" max-width="500px">
           <v-card>
-            <v-card-title class="text-center justify-center">リストを本当に永久削除しますか。<br/>削除した後は復旧できません。</v-card-title>
+            <v-card-title class="text-center justify-center">목록을 정말로 영구삭제하시겠습니까?<br/>삭제한 후에는 복구할 수 없습니다.</v-card-title>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" text @click="dialogDeleteAll = false; this.editedOrder.id = ''">キャンセル</v-btn>
-              <v-btn color="blue darken-1" text @click="deleteAllOrderConfirm">永久削除する</v-btn>
+              <v-btn color="blue darken-1" text @click="dialogDeleteAll = false; this.editedOrder.id = ''">취소</v-btn>
+              <v-btn color="blue darken-1" text @click="deleteAllOrderConfirm">영구삭제하기</v-btn>
               <v-spacer></v-spacer>
             </v-card-actions>
           </v-card>
@@ -544,17 +544,17 @@ export default {
     checkbox: '',
     items: [
       {
-        text: "未処理",
+        text: "미처리",
         icon: "mdi-file-alert-outline",
         list: []
       },
       {
-        text: "処理済",
+        text: "처리완",
         icon: "mdi-file-check-outline",
         list: []
       },
       {
-        text: "ごみ箱",
+        text: "휴지통",
         icon: "mdi-delete-outline",
         list: []
       }
@@ -567,18 +567,18 @@ export default {
     clientList: [],
     statuses: [
       {
-        text: '未処理',
+        text: '미처리',
         value: false,
       },
       {
-        text: '処理済',
+        text: '처리완',
         value: true
       }
     ],
     taxRates: ['10%', '15%'],
     valid: false,
     clientRules: [
-      v => !!v || '取引先を選択してください。'
+      v => !!v || '거래처를 선택해주세요.'
     ],
     editedOrder: {
       id: '',
@@ -588,7 +588,7 @@ export default {
       orderNumber: '',
       title: '',
       completed: {
-        text: '未処理',
+        text: '미처리',
         value: false,
       },
       orderDetails: [{
@@ -608,12 +608,12 @@ export default {
     checkedOrder: [],
     checkedOrderJson: [],
     labels: {
-      'orderNumber': '注文番号',
-      'title': '件名',
-      'client': '取引先名',
-      'orderDate': '注文日',
-      'deliveryDate': '納期日',
-      'orderDetails': '注文詳細情報',
+      'orderNumber': '주문번호',
+      'title': '건명',
+      'client': '거래처명',
+      'orderDate': '주문일',
+      'deliveryDate': '납기일',
+      'orderDetails': '주문상세정보',
     },
     fields: [
       'orderNumber', 'title', 'client', 'orderDate', 'deliveryDate', 'orderDetails'
@@ -636,7 +636,7 @@ export default {
       html2canvas(element).then(function(canvas) {
         let img = canvas.toDataURL();
         doc.addImage(img, 'png', 0, 0, pageWidth, imgHeight);
-        doc.save("受注情報.pdf");
+        doc.save("수주정보.pdf");
       })
     },
     zf(n, digits) {
@@ -672,7 +672,7 @@ export default {
               orderNumber: order.orderNumber,
               title: order.title,
               completed: {
-                text: order.completed ? '処理済' : '未処理',
+                text: order.completed ? '처리완' : '미처리',
                 value: order.completed
               },
               orderDetails: orderDetails,
@@ -831,7 +831,7 @@ export default {
     },
     save() {
       if(!this.editedOrder.clientId) {
-        alert("取引先を選択してください");
+        alert("거래처를 선택해주세요.");
         return;
       }
       this.editedOrder.orderDetails.forEach(e => delete e.rowPrice);
@@ -846,7 +846,7 @@ export default {
               this.setOrderList();
               this.clear();
             } else {
-              alert("エラーが発生しました");
+              alert("에러가 발생했습니다.");
             }
           });
       }
@@ -858,7 +858,7 @@ export default {
                 this.setOrderList();
                 this.clear();
               } else {
-                alert("エラーが発生しました");
+                alert("에러가 발생했습니다.");
               }
             })
       }
@@ -873,7 +873,7 @@ export default {
         orderNumber: '',
         title: '',
         completed: {
-          text: '未処理',
+          text: '미처리',
           value: false,
         },
         orderDetails: [{

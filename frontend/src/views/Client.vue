@@ -4,7 +4,7 @@
     <v-flex sm12 md8 offset-md2>
       <v-layout align-center justify-space-between>
         <span class="text-h4">
-          取引先
+          거래처
         </span>
       </v-layout>
       <v-divider class="mt-7 mb-3"/>
@@ -18,7 +18,7 @@
         class="elevation-1"
         :footer-props="{
           showFirstLastPage: true,
-          'items-per-page-text': '表示数'
+          'items-per-page-text': '표지수'
         }"
       >
         <template v-slot:header.bookmarked="{ header }">
@@ -32,7 +32,7 @@
           <v-text-field
               v-model="search"
               append-icon="mdi-magnify"
-              label="取引先名、管理コード、電話番号など"
+              label="거래처명, 관리코드, 전화번호 등"
               single-line
               hide-details
           ></v-text-field>
@@ -50,7 +50,7 @@
                   v-bind="attrs"
                   v-on="on"
               >
-                <span>取引先の新規登録</span>
+                <span>거래처 신규등록</span>
               </v-btn>
             </template>
             <v-card>
@@ -68,7 +68,7 @@
                     >
                       <v-text-field
                           v-model="editedItem.name"
-                          label="取引先名"
+                          label="거래처명"
                       ></v-text-field>
                     </v-col>
                     <v-col
@@ -78,7 +78,7 @@
                     >
                       <v-text-field
                           v-model="editedItem.manager"
-                          label="担当者名"
+                          label="담당자명"
                       ></v-text-field>
                     </v-col>
                   </v-row>
@@ -90,7 +90,7 @@
                     >
                       <v-text-field
                           v-model="editedItem.tel"
-                          label="電話番号"
+                          label="전화번호"
                       ></v-text-field>
                     </v-col>
                     <v-col
@@ -100,7 +100,7 @@
                     >
                       <v-text-field
                           v-model="editedItem.address"
-                          label="送り先"
+                          label="보낼 주소"
                       ></v-text-field>
                     </v-col>
                   </v-row>
@@ -114,25 +114,25 @@
                     text
                     @click="close"
                 >
-                  キャンセル
+                  취소
                 </v-btn>
                 <v-btn
                     color="blue darken-1"
                     text
                     @click="save"
                 >
-                  完了
+                  완료
                 </v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
           <v-dialog v-model="dialogDelete" max-width="500px">
             <v-card>
-              <v-card-title class="text-center justify-center">本当にこの取引先を削除しますか?</v-card-title>
+              <v-card-title class="text-center justify-center">정말로 이 거래처를 삭제하시겠습니까?</v-card-title>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closeDelete">キャンセル</v-btn>
-                <v-btn color="blue darken-1" text @click="deleteItemConfirm">削除</v-btn>
+                <v-btn color="blue darken-1" text @click="closeDelete">취소</v-btn>
+                <v-btn color="blue darken-1" text @click="deleteItemConfirm">삭제</v-btn>
                 <v-spacer></v-spacer>
               </v-card-actions>
             </v-card>
@@ -158,12 +158,12 @@
         </v-icon>
       </template>
       <template v-slot:no-data>
-        <span>登録された取引先がありません。</span>
+        <span>등록된 거래처가 없습니다.</span>
       </template>
         <template v-slot:footer.prepend>
           <download-csv
             :data = "selected"
-            :name = "'取引先.csv'"
+            :name = "'거래처 목록.csv'"
             :labels = "labels"
             :fields = "fields"
           >
@@ -171,7 +171,7 @@
             <v-icon>
               mdi-download
             </v-icon>
-            チェックしたリストをCSVでダウンロード
+            체크한 목록을 CSV 다운로드
           </v-btn>
           </download-csv>
         </template>
@@ -195,20 +195,20 @@ export default {
     search: '',
     selected: [],
     headers: [
-      { text: '取引先', align: 'start', value: 'name' },
-      { text: 'bookmark', value: 'bookmarked'},
-      { text: '管理コード', value: 'id' },
-      { text: '担当者名', value: 'manager' },
-      { text: '電話番号', value: 'tel' },
-      { text: '送り先', value: 'address' },
-      { text: '操作', value: 'actions', sortable: false },
+      { text: '거래처', align: 'start', value: 'name' },
+      { text: '즐겨찾기', value: 'bookmarked'},
+      { text: '괸리코드', value: 'id' },
+      { text: '담당자명', value: 'manager' },
+      { text: '전화번호', value: 'tel' },
+      { text: '보낼 주소', value: 'address' },
+      { text: '조작', value: 'actions', sortable: false },
     ],
     labels: {
-      'id': '管理コード',
-      'name': '取引先名',
-      'manager': '担当者名',
-      'tel': '電話番号',
-      'address': '送り先'
+      'id': '관리코드',
+      'name': '거래처명',
+      'manager': '담당자명',
+      'tel': '전화번호',
+      'address': '보낼 주소'
     },
     fields: [
         'id', 'name', 'manager', 'tel', 'address'
@@ -235,7 +235,7 @@ export default {
 
   computed: {
     formTitle () {
-      return this.editedIndex === -1 ? '新規登録' : '修整'
+      return this.editedIndex === -1 ? '신규등록' : '수정'
     },
   },
 

@@ -4,7 +4,7 @@
       <v-card-title>
         <v-layout align-center justify-space-between>
         <h3 class="headline">
-          Register
+          회원가입
         </h3>
         <v-icon color="info" @click.prevent="$router.go(-1)">
           mdi-keyboard-backspace
@@ -40,7 +40,7 @@
                           required
                           name="password"/>
             <v-btn block color="info" type="submit" class="my-2">
-              Register
+              등록
             </v-btn>
           </div>
         </v-form>
@@ -52,7 +52,7 @@
         >{{message}}
           <div v-if="successful">
             <v-btn color="info" plain to="/login" class="text-h6">
-              ログインしますか？
+              로그인하기
             </v-btn>
           </div>
         </div>
@@ -74,15 +74,15 @@ export default {
       message: '',
       valid: false,
       usernameRules: [
-        v => !!v || 'IDを入力してください。',
-        v => (v && v.length >= 3) || 'IDには3文字以上入力してください。'
+        v => !!v || '아이디를 입력해주세요.',
+        v => (v && v.length >= 3) || '아이디는 3글자 이상으로 입력해주세요.'
       ],
       emailRules: [
-        v => !!v || 'メールアドレスを入力してください。',
-        v => /.+@.+\..+/.test(v) || '正しいメールアドレス形式を入力してください。',
+        v => !!v || '이메일을 입력해주세요.',
+        v => /.+@.+\..+/.test(v) || '올바른 이메일 형식으로 입력해주세요.',
       ],
       passwordRules: [
-        v => !!v || 'パスワードを入力してください。'
+        v => !!v || '패스워드를 입력해주세요.'
       ]
     };
   },

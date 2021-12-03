@@ -3,7 +3,7 @@
     <v-card elevation="4" class="mx-auto mt-16" max-width="400">
       <v-card-title>
         <h3 class="headline">
-          Login
+          로그인
         </h3>
       </v-card-title>
       <v-divider class="mx-2"/>
@@ -26,11 +26,11 @@
                         required
                         name="password"/>
           <v-btn block color="info" type="submit" class="my-2">
-              Login
+              로그인
           </v-btn>
           <div v-if="message" class="alert alert-danger" role="alert">{{message}}</div>
           <v-btn color="info" plain to="/register">
-            新しいアカウントを作りますか?
+            새로운 계정을 등록하시겠습니까?
           </v-btn>
         </v-form>
       </v-card-text>
@@ -50,10 +50,10 @@ export default {
       message: '',
       valid: false,
       usernameRules: [
-          v => !!v || 'IDを入力してください。'
+          v => !!v || '아이디를 입력해주세요.'
       ],
       passwordRules: [
-          v => !!v || 'パスワードを入力してください。'
+          v => !!v || '패스워드를 입력해주세요.'
       ]
     };
   },

@@ -5,7 +5,7 @@
         <v-list-item-content>
           <v-list-item-title class="text-xl-h5">
             <div class="py-lg-3">
-              受注管理システム
+              수주관리시스템
             </div>
           </v-list-item-title>
         </v-list-item-content>
@@ -23,7 +23,7 @@
 
           <v-list-item-content>
             <v-list-item-title>{{currentUser.username}}</v-list-item-title>
-            <v-list-item-subtitle>ログイン中</v-list-item-subtitle>
+            <v-list-item-subtitle>접속중</v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
         <v-divider class="mx-2"/>
@@ -33,13 +33,13 @@
               <v-list-item-icon>
                 <v-icon>mdi-account</v-icon>
               </v-list-item-icon>
-              <v-list-item-title>プロフィール</v-list-item-title>
+              <v-list-item-title>프로필</v-list-item-title>
             </v-list-item>
             <v-list-item @click.prevent="logout">
               <v-list-item-icon>
                 <v-icon>mdi-logout-variant</v-icon>
               </v-list-item-icon>
-              <v-list-item-title>ログアウト</v-list-item-title>
+              <v-list-item-title>로그아웃</v-list-item-title>
             </v-list-item>
           </v-list>
         </v-menu>
@@ -108,21 +108,21 @@ export default {
   name: 'App',
   data: () => ({
     items: [
-      { title: 'ホーム', icon: 'mdi-home', to: '/'},
-      { title: '見積書', icon: 'mdi-clipboard-list', to: '#1'},
-      { title: '納品書', icon: 'mdi-truck-delivery', to: '#2'},
-      { title: '請求書', icon: 'mdi-cash', to: '#3'},
-      { title: '受注管理', icon: 'mdi-file-cog', to: '/order'},
-      { title: 'レポート', icon: 'mdi-file-chart', to: '#5'},
+      { title: '홈', icon: 'mdi-home', to: '/'},
+      { title: '견적서', icon: 'mdi-clipboard-list', to: '#1'},
+      { title: '납품서', icon: 'mdi-truck-delivery', to: '#2'},
+      { title: '청구서', icon: 'mdi-cash', to: '#3'},
+      { title: '수주관리', icon: 'mdi-file-cog', to: '/order'},
+      { title: '레포트', icon: 'mdi-file-chart', to: '#5'},
     ],
     items2: [
-      { title: '受信箱', icon: 'mdi-mailbox', to: '#6'}
+      { title: '수신함', icon: 'mdi-mailbox', to: '#6'}
     ],
     items3: [
-      { title: '取引先', icon: 'mdi-folder-account', to: '/client'},
-      { title: '品目管理', icon: 'mdi-database-cog', to: '#8'},
-      { title: 'ご利用履歴', icon: 'mdi-history', to: '#9'},
-      { title: '設定', icon: 'mdi-cog', to: '/setting'},
+      { title: '거래처', icon: 'mdi-folder-account', to: '/client'},
+      { title: '품목관리', icon: 'mdi-database-cog', to: '#8'},
+      { title: '이용내역', icon: 'mdi-history', to: '#9'},
+      { title: '설정', icon: 'mdi-cog', to: '/setting'},
     ],
   }),
 
