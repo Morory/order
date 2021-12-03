@@ -62,13 +62,13 @@ public class AuthServiceImpl implements IAuthService {
         if(userRepository.existsByUsername(signupRequest.getUsername())) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Error: すでに使用中のIDです。"));
+                    .body(new MessageResponse("Error: 이미 사용중인 ID입니다."));
         }
 
         if(userRepository.existsByEmail(signupRequest.getEmail())) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Error: すでに使用中のメールアドレスです"));
+                    .body(new MessageResponse("Error: 이미 사용중인 이메일입니다."));
         }
 
         User user = new User(signupRequest.getUsername(), signupRequest.getEmail(), encoder.encode(signupRequest.getPassword()));
@@ -106,6 +106,6 @@ public class AuthServiceImpl implements IAuthService {
         user.setRoles(roles);
         userRepository.save(user);
 
-        return ResponseEntity.ok(new MessageResponse("登録しました！"));
+        return ResponseEntity.ok(new MessageResponse("등록되었습니다!"));
     }
 }
